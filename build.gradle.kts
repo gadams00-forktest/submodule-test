@@ -6,6 +6,8 @@
  */
 plugins {
     java
+    id("io.moderne.rewrite") version ("0.24.0")
+    `maven-publish`
 }
 
 group = "org.example"
@@ -13,5 +15,26 @@ group = "org.example"
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+publishing {
+    repositories {
+        maven {
+            url = uri("https://artifactory.moderne.ninja/artifactory/greg-local/")
+            credentials {
+                username = properties["artifactory.username"].toString()
+                password = properties["artifactory.password"].toString()
+            }
+        }
+    }
+    publications {
+        create<MavenPublication>("moderne") {
+            artifact(tasks.named("moderneJar"))
+        }
     }
 }
